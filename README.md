@@ -134,33 +134,3 @@ kubectl describe node <NODE-NAME>
 
 Ensure the network interfaces are assigned correctly.
 
----
-
-## **Troubleshooting**
-### **1. Worker Nodes Not Joining the Cluster**
-- Ensure the vSphere VM template is correctly configured.
-- Check for misconfigurations in the ClusterClass.
-- Inspect the logs:
-  ```bash
-  kubectl logs -n kube-system <NODE-NAME>
-  ```
-
-### **2. Dual NIC Not Applied to Worker Nodes**
-- Verify that the `vspheremachine-template-dual-nic.yaml` is applied successfully.
-- Check if the correct `ClusterClass` is assigned to the cluster.
-- Inspect vSphere networking for conflicts.
-
-### **3. Nodes Stuck in "Not Ready" State**
-- Review the `kubelet` logs on the affected node.
-- Check if there are issues with DHCP or static IP assignment.
-
----
-
-## **Conclusion**
-This guide provides a structured approach to deploying worker nodes with **dual NICs** in a TKGM 2.5.0 cluster. By leveraging the **ClusterClass** model and a customized **VSphereMachineTemplate**, administrators can efficiently apply this configuration across clusters while maintaining flexibility.
-
-For further assistance, consult the **VMware Tanzu documentation** or reach out to your infrastructure team.
-
----
-
-Let me know if you need any modifications! 🚀
