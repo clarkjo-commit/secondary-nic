@@ -1,0 +1,29 @@
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: VSphereMachineTemplate
+metadata:
+  name: tkg-vsphere-default-v1.2.0-worker-dual-nic
+  namespace: default
+  ownerReferences:
+  - apiVersion: cluster.x-k8s.io/v1beta1
+    kind: ClusterClass
+    name: tkg-vsphere-default-v1.2.0
+spec:
+  template:
+    spec:
+      cloneMode: fullClone
+      datacenter: /<DATACENTER-NAME>
+      datastore: /<DATASTORE-NAME>
+      diskGiB: 40
+      folder: /<FOLDER-NAME>
+      memoryMiB: 8192
+      network:
+        devices:
+        - networkName: /<ORIGINAL-NETWORK>
+        - networkName: /<STORAGE-NETWORK>
+      numCPUs: 4
+      numCoresPerSocket: 0
+      powerOffMode: hard
+      resourcePool: /<RESOURCE-NAME>
+      server: <VCENTERSERVER-NAME>
+      storagePolicyName: ""
+      template: ' '

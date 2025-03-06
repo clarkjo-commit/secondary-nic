@@ -1,0 +1,105 @@
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: ClusterClass
+metadata:
+  annotations:
+    run.tanzu.vmware.com/resolve-tkr: ""
+    run.tanzu.vmware.com/verified-tkrs: v1.25.10+vmware.2-tkg.1,v1.24.14+vmware.2-tkg.1,v1.26.5+vmware.1-tiny.2-tkg.1,v1.25.10+vmware.1-tiny.2-tkg.1,v1.24.14+vmware.1-tiny.2-tkg.1,v1.26.5+vmware.2-tkg.1,v1.24.17+vmware.1-tiny.1-tkg.1,v1.24.17+vmware.1-tkg.1,v1.26.8+vmware.1-tkg.2,v1.25.13+vmware.1-tkg.2,v1.25.13+vmware.1-tiny.1-tkg.2,v1.26.8+vmware.1-tiny.1-tkg.2,v1.26.8+vmware.1-fips.1-tkg.3,v1.25.13+vmware.1-fips.1-tkg.3,v1.24.17+vmware.1-fips.1-tkg.3,v1.26.8+vmware.1-tiny.1-tkg.2,v1.25.13+vmware.1-tiny.1-tkg.2,v1.24.17+vmware.1-tiny.1-tkg.1,v1.27.5+vmware.1-tkg.1,v1.26.8+vmware.1-tkg.1,v1.25.13+vmware.1-tiny.1-tkg.1,v1.26.8+vmware.1-tiny.1-tkg.1,v1.25.13+vmware.1-tkg.1,v1.27.5+vmware.1-tiny.1-tkg.1,v1.27.5+vmware.1-tkg.3,v1.25.13+vmware.1-tkg.4,v1.26.8+vmware.1-tiny.1-tkg.4,v1.27.5+vmware.1-tiny.1-tkg.3,v1.25.13+vmware.1-tiny.1-tkg.3,v1.26.8+vmware.1-tkg.4,v1.28.4+vmware.1-tiny.1-tkg.1,v1.26.11+vmware.1-tkg.1,v1.27.8+vmware.1-tkg.2,v1.28.4+vmware.1-tkg.1,v1.26.11+vmware.1-tiny.1-tkg.1,v1.27.8+vmware.1-tiny.1-tkg.2,v1.26.14+vmware.1-tiny.1-tkg.1,v1.27.11+vmware.1-tkg.3,v1.26.14+vmware.1-tkg.2,v1.27.11+vmware.1-tiny.1-tkg.1,v1.28.7+vmware.1-tkg.3,v1.28.7+vmware.1-tiny.1-tkg.1,v1.27.13+vmware.1-tiny.1-tkg.2,v1.28.9+vmware.1-tiny.1-tkg.2,v1.29.6+vmware.1-tkg.3,v1.27.15+vmware.1-tkg.2,v1.26.14+vmware.1-tkg.4,v1.30.2+vmware.1-tkg.1,v1.28.11+vmware.2-tkg.2,v1.26.14+vmware.1-tiny.1-tkg.3
+  generation: 1
+  labels:
+    run.tanzu.vmware.com/tkg-managed: ""
+    run.tanzu.vmware.com/tkg-version: v2.5.2
+  name: tkg-vsphere-default-v1.2.0
+  namespace: default
+spec:
+  controlPlane:
+    machineHealthCheck:
+      maxUnhealthy: 100%
+      nodeStartupTimeout: 20m0s
+      unhealthyConditions:
+      - status: Unknown
+        timeout: 5m0s
+        type: Ready
+      - status: "False"
+        timeout: 12m0s
+        type: Ready
+    machineInfrastructure:
+      ref:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+        kind: Template
+        name: tkg-vsphere-default-v1.2.0-control-plane
+        namespace: default
+    metadata: {}
+    namingStrategy:
+      template: '{{ .cluster.name }}-controlplane-{{ .random }}'
+    ref:
+      apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+      kind: KubeadmControlPlaneTemplate
+      name: tkg-vsphere-default-v1.2.0-kcp
+      namespace: default
+  infrastructure:
+    ref:
+      apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+      kind: VSphereClusterTemplate
+      name: tkg-vsphere-default-v1.2.0-cluster
+      namespace: default
+  patches:
+  - external:
+      discoverVariablesExtension: discover-variables.tkg-runtime-extension
+      generateExtension: generate-patches.tkg-runtime-extension
+      settings:
+        flavor: tkg
+        version: v1.2.0
+      validateExtension: validate-topology.tkg-runtime-extension
+    name: tkg-official-patch
+  workers:
+    machineDeployments:
+    - class: tkg-worker
+      machineHealthCheck:
+        maxUnhealthy: 100%
+        nodeStartupTimeout: 20m0s
+        unhealthyConditions:
+        - status: Unknown
+          timeout: 5m0s
+          type: Ready
+        - status: "False"
+          timeout: 12m0s
+          type: Ready
+      template:
+        bootstrap:
+          ref:
+            apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+            kind: KubeadmConfigTemplate
+            name: tkg-vsphere-default-v1.2.0-md-config
+            namespace: default
+        infrastructure:
+          ref:
+            apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+            kind: VSphereMachineTemplate
+            name: tkg-vsphere-default-v1.2.0-worker-dual-nic
+            namespace: default
+        metadata: {}
+    - class: tkg-worker-windows
+      machineHealthCheck:
+        maxUnhealthy: 100%
+        nodeStartupTimeout: 20m0s
+        unhealthyConditions:
+        - status: Unknown
+          timeout: 5m0s
+          type: Ready
+        - status: "False"
+          timeout: 12m0s
+          type: Ready
+      template:
+        bootstrap:
+          ref:
+            apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+            kind: KubeadmConfigTemplate
+            name: tkg-vsphere-default-v1.2.0-md-config
+            namespace: default
+        infrastructure:
+          ref:
+            apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+            kind: VSphereMachineTemplate
+            name: tkg-vsphere-default-v1.2.0-worker
+            namespace: default
+        metadata: {}
