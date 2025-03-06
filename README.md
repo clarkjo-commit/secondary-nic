@@ -1,7 +1,3 @@
-Here’s a detailed README file outlining how the customized vSphere machine template works and how to apply it to the custom cluster class in an existing TKGM 2.5.0 cluster.
-
----
-
 # **Customized vSphere Machine Template for Dual NIC Deployment in TKGM 2.5.0**
 
 ## **Overview**
