@@ -19,8 +19,10 @@ spec:
       network:
         devices:
         - networkName: /<ORIGINAL-NETWORK>
+          dhcp4: true
         - networkName: /<STORAGE-NETWORK>
           dhcp4: true
+          skipIPallocation: true
       numCPUs: 4
       numCoresPerSocket: 0
       powerOffMode: hard

@@ -51,6 +51,29 @@ spec:
         version: v1.2.0
       validateExtension: validate-topology.tkg-runtime-extension
     name: tkg-official-patch
+  - definitions:
+    - jsonPatches:
+      - op: add
+        path: /spec/template/spec/preKubeadmCommands/-
+        value: |
+          FOURTH_OCTET=$(ip a | grep eth0 | grep inet | awk '{print $2}' | cut -d/ -f1 | cut -d. -f 4)
+          cat > /etc/systemd/network/10-cloud-init-eth1.network << EOF
+          [Match]
+          Name=eth1
+          [Network]
+          DHCP=no
+          [Address]
+          Address=192.168.150.${FOURTH_OCTET}/24
+          EOF
+          systemctl restart systemd-networkd
+      selector:
+        apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+        kind: KubeadmConfigTemplate
+        matchResources:
+          machineDeploymentClass:
+            names:
+            - tkg-worker
+    name: configureSecondNIC
   workers:
     machineDeployments:
     - class: tkg-worker
